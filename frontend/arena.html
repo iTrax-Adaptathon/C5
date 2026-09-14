@@ -1,1 +1,120 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platform - Peer Review Arena</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="hero-tag">Anti-Popularity Arena</span>
+      <h1>Peer Review Arena</h1>
+      <p>Evaluate two random submissions head-to-head using the pairwise Elo engine</p>
+      <nav class="nav-bar">
+        <a href="index.html" class="nav-link">Submit Entry</a>
+        <a href="leaderboard.html" class="nav-link">Standings</a>
+        <a href="arena.html" class="nav-link active">Peer Arena</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="arena-header">
+          <div>
+            <h2>⚖️ Current Matchup</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+              Select the superior submission to calibrate peer ratings.
+            </p>
+          </div>
+          <button id="skipPairBtn" class="btn-secondary">Skip Matchup</button>
+        </div>
+
+        <div class="arena-matchup">
+          <div class="contender-box">
+            <span style="font-size: 0.75rem; font-weight: 700; color: #818cf8;">ENTRY A</span>
+            <div class="preview-box">
+              <img id="imgA" src="" alt="Entry A proof" />
+            </div>
+            <h3 id="authorA" style="font-size: 1.05rem; font-weight: 700;">Loading...</h3>
+            <p id="descA" style="font-size: 0.85rem; color: var(--text-muted);">Fetching proof...</p>
+            <button class="vote-action-btn" onclick="castVote('A')">Select Entry A</button>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="contender-box">
+            <span style="font-size: 0.75rem; font-weight: 700; color: #ec4899;">ENTRY B</span>
+            <div class="preview-box">
+              <img id="imgB" src="" alt="Entry B proof" />
+            </div>
+            <h3 id="authorB" style="font-size: 1.05rem; font-weight: 700;">Loading...</h3>
+            <p id="descB" style="font-size: 0.85rem; color: var(--text-muted);">Fetching proof...</p>
+            <button class="vote-action-btn" onclick="castVote('B')">Select Entry B</button>
+          </div>
+        </div>
+
+        <p id="voteFeedback" style="text-align: center; margin-top: 1rem; font-weight: 600; font-size: 0.9rem;"></p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8080/api";
+    let currentPair = { submissionA: null, submissionB: null };
+
+    async function loadNextMatchup() {
+      const feedback = document.getElementById("voteFeedback");
+      feedback.textContent = "";
+
+      try {
+        const res = await fetch(`${API_BASE}/challenges/photo-contest/pair`);
+        const data = await res.json();
+        currentPair = data;
+        renderMatchup(data.submissionA, data.submissionB);
+      } catch (err) {
+        currentPair = {
+          submissionA: { id: "sub_101", user: "creative_mind", url: "https://picsum.photos/seed/art1/400/300", desc: "Generative Canvas Model v2" },
+          submissionB: { id: "sub_102", user: "prompt_master", url: "https://picsum.photos/seed/art2/400/300", desc: "Minimalist Shaded Architecture" }
+        };
+        renderMatchup(currentPair.submissionA, currentPair.submissionB);
+      }
+    }
+
+    function renderMatchup(subA, subB) {
+      document.getElementById("authorA").textContent = subA.user;
+      document.getElementById("descA").textContent = subA.desc;
+      document.getElementById("imgA").src = subA.url;
+
+      document.getElementById("authorB").textContent = subB.user;
+      document.getElementById("descB").textContent = subB.desc;
+      document.getElementById("imgB").src = subB.url;
+    }
+
+    async function castVote(choice) {
+      const winner = choice === 'A' ? currentPair.submissionA : currentPair.submissionB;
+      const feedback = document.getElementById("voteFeedback");
+
+      try {
+        await fetch(`${API_BASE}/challenges/photo-contest/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ winnerId: winner.id })
+        });
+        feedback.style.color = "#4ade80";
+        feedback.textContent = `Vote counted for ${winner.user}! Elo recalibrated.`;
+      } catch (err) {
+        feedback.style.color = "#a855f7";
+        feedback.textContent = `Vote counted for ${winner.user}! (Demo Simulation)`;
+      }
+
+      setTimeout(loadNextMatchup, 1000);
+    }
+
+    document.getElementById("skipPairBtn").addEventListener("click", loadNextMatchup);
+    loadNextMatchup();
+  </script>
+</body>
+</html>
