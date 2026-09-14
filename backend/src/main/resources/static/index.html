@@ -3,197 +3,271 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Submit Entry - Challenge Platform</title>
+  <title>Submit Entry - Community Challenge Hub</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --surface: rgba(30, 41, 59, 0.7);
-      --surface-border: rgba(255, 255, 255, 0.08);
-      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-      --accent-hover: linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #db2777 100%);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --input-bg: #0f172a;
-      --input-border: #334155;
-      --radius: 16px;
+    .track-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.85rem;
+      margin-top: 0.4rem;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient);
-      min-height: 100vh;
-      color: var(--text-main);
-      padding: 2.5rem 1.5rem;
-    }
-
-    .container { max-width: 650px; margin: 0 auto; }
-
-    header { text-align: center; margin-bottom: 2.5rem; }
-
-    .hero-tag {
-      display: inline-block;
-      padding: 0.3rem 0.9rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.35);
-      color: #a5b4fc;
-      margin-bottom: 0.75rem;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      background: linear-gradient(to right, #ffffff, #cbd5e1, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    /* Shared Navigation Bar */
-    .nav-bar {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-
-    .nav-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.4rem 1rem;
-      border-radius: 9999px;
-      border: 1px solid var(--surface-border);
-      transition: all 0.2s ease;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      color: #fff;
-      background: rgba(99, 102, 241, 0.2);
-      border-color: rgba(99, 102, 241, 0.4);
-    }
-
-    .card {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-    }
-
-    .card h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 1.5rem; }
-
-    form { display: flex; flex-direction: column; gap: 1.2rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; }
-
-    input, select {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      font-size: 0.95rem;
-      color: #fff;
-      background-color: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 10px;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    input:focus, select:focus {
-      border-color: #818cf8;
-      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
-    }
-
-    button {
-      width: 100%;
-      padding: 0.85rem 1.5rem;
-      font-size: 1rem;
-      font-weight: 700;
-      color: #ffffff;
-      background: var(--accent-gradient);
-      border: none;
-      border-radius: 10px;
+    .track-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1.5px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 1.1rem;
       cursor: pointer;
-      margin-top: 0.5rem;
-      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      text-align: left;
+    }
+
+    .track-card:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(30, 41, 59, 0.7);
+      transform: translateY(-2px);
+    }
+
+    .track-card.active {
+      border-color: #818cf8;
+      background: rgba(99, 102, 241, 0.15);
+      box-shadow: 0 0 18px rgba(99, 102, 241, 0.3);
+    }
+
+    .track-icon {
+      font-size: 1.8rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .track-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+    }
+
+    .track-type {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.65rem;
+      margin-top: 0.4rem;
+    }
+
+    .tier-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 0.5rem;
+      cursor: pointer;
+      text-align: center;
       transition: all 0.2s ease;
     }
 
-    button:hover {
-      background: var(--accent-hover);
+    .tier-card:hover {
+      border-color: rgba(255, 255, 255, 0.2);
       transform: translateY(-1px);
     }
 
+    .tier-card.active {
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, 0.15);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+    }
+
+    .tier-badge {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      display: inline-block;
+      margin-bottom: 0.35rem;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    .tier-mult {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: #38bdf8;
+      font-family: var(--font-mono);
+    }
+
+    .tier-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .preview-banner {
+      margin-top: 1.5rem;
+      padding: 1.1rem 1.35rem;
+      background: rgba(10, 15, 29, 0.75);
+      border: 1px dashed rgba(99, 102, 241, 0.4);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.88rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .preview-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 700;
+      color: #cbd5e1;
+    }
+
+    .preview-pill span {
+      color: #38bdf8;
+      font-family: var(--font-mono);
+    }
+
     #submissionStatus {
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-top: 0.5rem;
-      color: #4ade80;
+      margin-top: 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      min-height: 1.5rem;
+      transition: all 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container animate-fade">
     <header>
-      <span class="hero-tag">Anti-Farming Engine</span>
+      <div class="brand-badge">
+        <span class="pulse-dot"></span>
+        <span>Anti-Farming Engine v2.0</span>
+      </div>
       <h1>Challenge Hub</h1>
-      <p>Submit proof and earn verified rankings</p>
+      <p>Submit cryptographically verified performance entries, eliminate bot manipulation, and earn fair rankings.</p>
+      
       <nav class="nav-bar">
-        <a href="index.html" class="nav-link active">Submit Entry</a>
-        <a href="leaderboard.html" class="nav-link">Standings</a>
-        <a href="arena.html" class="nav-link">Peer Arena</a>
+        <a href="index.html" class="nav-link active">
+          <span>🚀</span> Submit Entry
+        </a>
+        <a href="leaderboard.html" class="nav-link">
+          <span>🏆</span> Standings
+        </a>
+        <a href="arena.html" class="nav-link">
+          <span>⚖️</span> Peer Arena
+        </a>
       </nav>
     </header>
 
     <main>
       <section class="card">
-        <h2>🚀 Submit Entry</h2>
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🚀 Submit Performance Entry</h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.2rem;">
+              Enforces single active submission constraint per participant per track.
+            </p>
+          </div>
+        </div>
+
         <form id="submission-form">
           <div class="form-group">
-            <label for="userId">Participant ID</label>
-            <input type="text" id="userId" placeholder="Enter user UUID or handle" required />
+            <label for="userId">
+              <span>👤</span> Participant Handle / User ID
+            </label>
+            <input type="text" id="userId" placeholder="e.g. Satoshi_Dev or runner_99" required />
           </div>
 
           <div class="form-group">
-            <label for="challengeSelect">Challenge Track</label>
-            <select id="challengeSelect">
-              <option value="5k-run" data-type="metric">5K Speed Run (Metric)</option>
-              <option value="photo-contest" data-type="subjective">AI Prompt Arena (Pairwise Elo)</option>
-              <option value="book-reading" data-type="boolean">Deploy Contract (Boolean Completion)</option>
-            </select>
+            <label><span>🎯</span> Select Track</label>
+            <div class="track-grid">
+              <div class="track-card active" data-value="5k-run" data-type="metric">
+                <div class="track-icon">🏃</div>
+                <div class="track-name">5K Speed Run</div>
+                <div class="track-type">Cohort Percentile</div>
+              </div>
+
+              <div class="track-card" data-value="photo-contest" data-type="subjective">
+                <div class="track-icon">🎨</div>
+                <div class="track-name">AI Prompt Arena</div>
+                <div class="track-type">Pairwise Elo (K=32)</div>
+              </div>
+
+              <div class="track-card" data-value="book-reading" data-type="boolean">
+                <div class="track-icon">📜</div>
+                <div class="track-name">Contract Deploy</div>
+                <div class="track-type">Boolean Verified</div>
+              </div>
+            </div>
+            <input type="hidden" id="challengeId" value="5k-run" />
           </div>
 
           <div id="dynamicMetricField" class="form-group">
-            <label for="metricInput">Raw Performance Metric (Minutes / Reps)</label>
-            <input type="number" id="metricInput" step="any" placeholder="e.g. 21.4" />
+            <label for="metricInput" id="metricLabel">
+              <span>⚡</span> Raw Time (Minutes) — Lower is Better
+            </label>
+            <input type="number" id="metricInput" step="any" placeholder="e.g. 18.5" required />
           </div>
 
           <div class="form-group">
-            <label for="evidenceUrl">Proof or Media URL</label>
-            <input type="url" id="evidenceUrl" placeholder="https://github.com/..." required />
+            <label for="evidenceUrl">
+              <span>🔗</span> Proof URL / Strava / Arweave / GitHub
+            </label>
+            <input type="url" id="evidenceUrl" placeholder="https://strava.com/activities/... or https://github.com/..." required />
           </div>
 
           <div class="form-group">
-            <label for="verificationTier">Verification Tier</label>
-            <select id="verificationTier">
-              <option value="0">Tier 0: Self-reported (0.3x)</option>
-              <option value="1">Tier 1: Evidence Attached (0.5x)</option>
-              <option value="2">Tier 2: Peer-verified (1.0x)</option>
-              <option value="3">Tier 3: Sensor / API Verified (1.1x)</option>
-              <option value="4">Tier 4: Moderator Verified (1.2x)</option>
-            </select>
+            <label><span>🛡️</span> Verification Rigor Tier</label>
+            <div class="tier-grid">
+              <div class="tier-card active" data-tier="2">
+                <div class="tier-badge">Tier 2</div>
+                <div class="tier-mult">1.0x</div>
+                <div class="tier-desc">Peer Verified</div>
+              </div>
+              <div class="tier-card" data-tier="0">
+                <div class="tier-badge">Tier 0</div>
+                <div class="tier-mult">0.3x</div>
+                <div class="tier-desc">Self-reported</div>
+              </div>
+              <div class="tier-card" data-tier="1">
+                <div class="tier-badge">Tier 1</div>
+                <div class="tier-mult">0.5x</div>
+                <div class="tier-desc">Media Proof</div>
+              </div>
+              <div class="tier-card" data-tier="3">
+                <div class="tier-badge">Tier 3</div>
+                <div class="tier-mult">1.1x</div>
+                <div class="tier-desc">Sensor / API</div>
+              </div>
+              <div class="tier-card" data-tier="4">
+                <div class="tier-badge">Tier 4 ⭐</div>
+                <div class="tier-mult">1.2x</div>
+                <div class="tier-desc">Moderator</div>
+              </div>
+            </div>
+            <input type="hidden" id="verificationTier" value="2" />
           </div>
 
-          <button type="submit">Submit Entry</button>
+          <div class="preview-banner">
+            <div class="preview-pill">Active Track: <span id="summaryTrack">5K Speed Run</span></div>
+            <div class="preview-pill">Multiplier: <span id="summaryMult">1.0x</span></div>
+            <div class="preview-pill">Anti-Bot Guard: <span style="color: #10b981;">Active</span></div>
+          </div>
+
+          <button type="submit" class="btn-primary" style="margin-top: 1.5rem;">
+            <span>🚀</span> Confirm & Submit Proof
+          </button>
         </form>
+
         <p id="submissionStatus"></p>
       </section>
     </main>
@@ -201,32 +275,65 @@
 
   <script src="api.js"></script>
   <script>
-    const challengeSelect = document.getElementById("challengeSelect");
-    const dynamicMetricField = document.getElementById("dynamicMetricField");
+    const challengeInput = document.getElementById("challengeId");
+    const tierInput = document.getElementById("verificationTier");
+    const metricField = document.getElementById("dynamicMetricField");
+    const metricInput = document.getElementById("metricInput");
+    const metricLabel = document.getElementById("metricLabel");
+    const summaryTrack = document.getElementById("summaryTrack");
+    const summaryMult = document.getElementById("summaryMult");
 
-    challengeSelect.addEventListener("change", (e) => {
-      const selectedType = e.target.selectedOptions[0].dataset.type;
-      dynamicMetricField.style.display = (selectedType === "metric") ? "flex" : "none";
+    document.querySelectorAll(".track-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".track-card").forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+
+        const val = card.dataset.value;
+        const type = card.dataset.type;
+        challengeInput.value = val;
+        summaryTrack.textContent = card.querySelector(".track-name").textContent;
+
+        if (type === "metric") {
+          metricField.style.display = "flex";
+          metricInput.required = true;
+          metricLabel.innerHTML = `<span>⚡</span> Raw Time (Minutes) — Lower is Better`;
+        } else {
+          metricField.style.display = "none";
+          metricInput.required = false;
+        }
+      });
+    });
+
+    const multipliers = { "0": "0.3x", "1": "0.5x", "2": "1.0x", "3": "1.1x", "4": "1.2x" };
+    document.querySelectorAll(".tier-card").forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll(".tier-card").forEach(c => c.classList.remove("active"));
+        card.classList.add("active");
+
+        const tier = card.dataset.tier;
+        tierInput.value = tier;
+        summaryMult.textContent = multipliers[tier] || "1.0x";
+      });
     });
 
     document.getElementById("submission-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const statusEl = document.getElementById("submissionStatus");
       statusEl.style.color = "#a5b4fc";
-      statusEl.textContent = "Processing entry...";
+      statusEl.innerHTML = "⏳ Computing cohort percentile & recording proof...";
 
       const payload = {
         userId: document.getElementById("userId").value.trim(),
-        challengeId: challengeSelect.value,
-        rawMetric: document.getElementById("metricInput").value ? parseFloat(document.getElementById("metricInput").value) : null,
+        challengeId: challengeInput.value,
+        rawMetric: metricField.style.display !== "none" && metricInput.value ? parseFloat(metricInput.value) : null,
         contentUrl: document.getElementById("evidenceUrl").value.trim(),
-        verificationTier: parseInt(document.getElementById("verificationTier").value, 10)
+        verificationTier: parseInt(tierInput.value, 10)
       };
 
       try {
         await window.API.createSubmission(payload);
         statusEl.style.color = "#4ade80";
-        statusEl.textContent = "✓ Entry saved! Visit Standings to see your calibrated percentile ranking.";
+        statusEl.innerHTML = `✓ Entry for <strong>${payload.userId}</strong> recorded! <a href="leaderboard.html" style="color: #38bdf8; text-decoration: underline; margin-left: 0.5rem; font-weight: 700;">View in Standings →</a>`;
       } catch (err) {
         statusEl.style.color = "#f87171";
         statusEl.textContent = "Error saving entry: " + err.message;

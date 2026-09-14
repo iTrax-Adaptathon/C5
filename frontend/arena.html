@@ -3,238 +3,268 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Peer Arena - Challenge Platform</title>
+  <title>Peer Arena - Head-to-Head Pairwise Elo</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --surface: rgba(30, 41, 59, 0.75);
-      --surface-border: rgba(255, 255, 255, 0.08);
-      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --radius: 16px;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient);
-      min-height: 100vh;
-      color: var(--text-main);
-      padding: 2.5rem 1.5rem;
-    }
-
-    .container { max-width: 900px; margin: 0 auto; }
-
-    header { text-align: center; margin-bottom: 2.5rem; }
-
-    .hero-tag {
-      display: inline-block;
-      padding: 0.3rem 0.9rem;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      background: rgba(236, 72, 153, 0.15);
-      border: 1px solid rgba(236, 72, 153, 0.35);
-      color: #f472b6;
-      margin-bottom: 0.75rem;
-    }
-
-    header h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      background: linear-gradient(to right, #ffffff, #cbd5e1, #a855f7);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
-    }
-
-    header p { color: var(--text-muted); font-size: 1.05rem; }
-
-    .nav-bar {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 1.25rem;
-    }
-
-    .nav-link {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      padding: 0.4rem 1rem;
-      border-radius: 9999px;
-      border: 1px solid var(--surface-border);
-      transition: all 0.2s ease;
-    }
-
-    .nav-link:hover, .nav-link.active {
-      color: #fff;
-      background: rgba(99, 102, 241, 0.2);
-      border-color: rgba(99, 102, 241, 0.4);
-    }
-
-    .card {
-      background: var(--surface);
-      backdrop-filter: blur(12px);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius);
-      padding: 2rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-    }
-
-    .arena-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-
-    .arena-header h2 { font-size: 1.35rem; font-weight: 700; }
-
-    .btn-secondary {
-      padding: 0.5rem 1rem;
-      background: transparent;
-      border: 1px solid var(--surface-border);
-      color: var(--text-muted);
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-    }
-
     .arena-matchup {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
       gap: 1.5rem;
       align-items: center;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .arena-matchup {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .vs-circle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .vs-circle {
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 900;
       color: #ec4899;
-      padding: 0.6rem 0.8rem;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
-      background: rgba(236, 72, 153, 0.1);
-      border: 1px solid rgba(236, 72, 153, 0.3);
-    }
-
-    .contender-box {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--surface-border);
-      border-radius: 12px;
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-      transition: all 0.2s ease;
-    }
-
-    .contender-box:hover { border-color: #818cf8; }
-
-    .preview-box {
-      width: 100%;
-      height: 180px;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #0b0f19;
+      background: rgba(236, 72, 153, 0.12);
+      border: 1.5px solid rgba(236, 72, 153, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 0 20px rgba(236, 72, 153, 0.3);
+      animation: pulseAnim 2.5s infinite;
+    }
+
+    .contender-box {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1.5px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contender-box:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .contender-a:hover {
+      border-color: #818cf8;
+      box-shadow: 0 15px 35px -10px rgba(99, 102, 241, 0.35);
+    }
+
+    .contender-b:hover {
+      border-color: #ec4899;
+      box-shadow: 0 15px 35px -10px rgba(236, 72, 153, 0.35);
+    }
+
+    .contender-tag {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-box {
+      width: 100%;
+      height: 220px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      background: #060911;
+      border: 1px solid var(--surface-border);
+      position: relative;
     }
 
     .preview-box img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform 0.4s ease;
     }
 
-    .vote-action-btn {
-      background: linear-gradient(135deg, #3b82f6, #6366f1);
-      border: none;
-      border-radius: 8px;
-      padding: 0.75rem;
+    .contender-box:hover .preview-box img {
+      transform: scale(1.04);
+    }
+
+    .contender-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .contender-title {
+      font-size: 1.15rem;
+      font-weight: 800;
       color: #fff;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .vote-action-btn:hover {
-      background: linear-gradient(135deg, #2563eb, #4f46e5);
-      transform: translateY(-1px);
+    .elo-pill {
+      font-size: 0.8rem;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-pill);
+    }
+
+    .contender-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .vote-btn-a {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+    }
+
+    .vote-btn-a:hover {
+      background: linear-gradient(135deg, #4338ca, #4f46e5);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.5);
+    }
+
+    .vote-btn-b {
+      background: linear-gradient(135deg, #db2777, #ec4899);
+      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.35);
+    }
+
+    .vote-btn-b:hover {
+      background: linear-gradient(135deg, #be185d, #db2777);
+      box-shadow: 0 8px 20px rgba(236, 72, 153, 0.5);
     }
 
     #voteFeedback {
       text-align: center;
-      margin-top: 1rem;
-      font-weight: 600;
-      font-size: 0.9rem;
+      margin-top: 1.5rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      min-height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
     }
 
-    @media (max-width: 768px) {
-      .arena-matchup { grid-template-columns: 1fr; }
-      .vs-circle { margin: 0 auto; }
+    .session-stats {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--text-subtle);
+      font-family: var(--font-mono);
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="container animate-fade">
     <header>
-      <span class="hero-tag">Anti-Popularity Arena</span>
+      <div class="brand-badge">
+        <span class="pulse-dot"></span>
+        <span>Anti-Popularity Arena</span>
+      </div>
       <h1>Peer Review Arena</h1>
-      <p>Evaluate two random submissions head-to-head without follower bias</p>
+      <p>Blind pairwise head-to-head voting. Calibrates qualitative submissions without follower count bias.</p>
+      
       <nav class="nav-bar">
-        <a href="index.html" class="nav-link">Submit Entry</a>
-        <a href="leaderboard.html" class="nav-link">Standings</a>
-        <a href="arena.html" class="nav-link active">Peer Arena</a>
+        <a href="index.html" class="nav-link">
+          <span>🚀</span> Submit Entry
+        </a>
+        <a href="leaderboard.html" class="nav-link">
+          <span>🏆</span> Standings
+        </a>
+        <a href="arena.html" class="nav-link active">
+          <span>⚖️</span> Peer Arena
+        </a>
       </nav>
     </header>
 
     <main>
       <section class="card">
-        <div class="arena-header">
+        <div class="card-header">
           <div>
-            <h2>⚖️ Current Matchup</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">Vote for the higher-quality entry to calibrate ratings.</p>
+            <h2 class="card-title">⚖️ Live Pairwise Matchup</h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.2rem;">
+              Vote for the higher-fidelity output. Elo rating adjusts dynamically (K=32).
+            </p>
           </div>
-          <button id="skipPairBtn" class="btn-secondary">Skip Matchup</button>
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="skipPairBtn" class="btn-secondary">
+              <span>⏭️</span> Skip Pair
+            </button>
+          </div>
         </div>
 
+        <!-- Matchup Grid -->
         <div class="arena-matchup">
-          <div class="contender-box">
-            <span style="font-size: 0.75rem; font-weight: 700; color: #818cf8;">ENTRY A</span>
-            <div class="preview-box"><img id="imgA" src="" alt="Entry A proof" /></div>
-            <h3 id="authorA" style="font-size: 1.05rem; font-weight: 700;">Loading...</h3>
-            <p id="descA" style="font-size: 0.85rem; color: var(--text-muted);">Fetching...</p>
-            <button class="vote-action-btn" onclick="castVote('A')">Select Entry A</button>
+          <!-- Contender A -->
+          <div class="contender-box contender-a">
+            <div class="contender-tag" style="color: #818cf8;">
+              <span>ENTRY A</span>
+              <span id="eloBadgeA" class="elo-pill">-- Elo</span>
+            </div>
+            <div class="preview-box">
+              <img id="imgA" src="" alt="Entry A Media" />
+            </div>
+            <div class="contender-meta">
+              <div class="contender-title">
+                <span id="authorA">Loading...</span>
+              </div>
+              <p id="descA" class="contender-desc">Fetching details...</p>
+            </div>
+            <button class="btn-primary vote-btn-a" onclick="castVote('A')">
+              <span>👍</span> Vote Entry A
+            </button>
           </div>
 
-          <div class="vs-circle">VS</div>
+          <!-- VS Center -->
+          <div class="vs-circle-wrapper">
+            <div class="vs-circle">VS</div>
+            <div class="session-stats" id="sessionCounter">Votes: 0</div>
+          </div>
 
-          <div class="contender-box">
-            <span style="font-size: 0.75rem; font-weight: 700; color: #ec4899;">ENTRY B</span>
-            <div class="preview-box"><img id="imgB" src="" alt="Entry B proof" /></div>
-            <h3 id="authorB" style="font-size: 1.05rem; font-weight: 700;">Loading...</h3>
-            <p id="descB" style="font-size: 0.85rem; color: var(--text-muted);">Fetching...</p>
-            <button class="vote-action-btn" onclick="castVote('B')">Select Entry B</button>
+          <!-- Contender B -->
+          <div class="contender-box contender-b">
+            <div class="contender-tag" style="color: #ec4899;">
+              <span>ENTRY B</span>
+              <span id="eloBadgeB" class="elo-pill">-- Elo</span>
+            </div>
+            <div class="preview-box">
+              <img id="imgB" src="" alt="Entry B Media" />
+            </div>
+            <div class="contender-meta">
+              <div class="contender-title">
+                <span id="authorB">Loading...</span>
+              </div>
+              <p id="descB" class="contender-desc">Fetching details...</p>
+            </div>
+            <button class="btn-primary vote-btn-b" onclick="castVote('B')">
+              <span>👍</span> Vote Entry B
+            </button>
           </div>
         </div>
 
-        <p id="voteFeedback"></p>
+        <div id="voteFeedback"></div>
       </section>
     </main>
   </div>
@@ -242,6 +272,7 @@
   <script src="api.js"></script>
   <script>
     let currentPair = { submissionA: null, submissionB: null };
+    let votesCast = 0;
 
     async function loadNextMatchup() {
       const feedback = document.getElementById("voteFeedback");
@@ -253,22 +284,24 @@
         renderMatchup(data.submissionA, data.submissionB);
       } catch (err) {
         feedback.style.color = "#f87171";
-        feedback.textContent = "Error loading matchup: " + err.message;
+        feedback.textContent = "Unable to load matchup: " + err.message;
       }
     }
 
     function renderMatchup(subA, subB) {
-      document.getElementById("authorA").textContent = `${subA.user} (${subA.elo} Elo)`;
-      document.getElementById("descA").textContent = subA.desc || "Verified Contender";
+      document.getElementById("authorA").textContent = subA.user;
+      document.getElementById("eloBadgeA").textContent = `${subA.elo} Elo`;
+      document.getElementById("descA").textContent = subA.desc || "Verified Contender Entry";
       document.getElementById("imgA").src = subA.url;
 
-      document.getElementById("authorB").textContent = `${subB.user} (${subB.elo} Elo)`;
-      document.getElementById("descB").textContent = subB.desc || "Verified Contender";
+      document.getElementById("authorB").textContent = subB.user;
+      document.getElementById("eloBadgeB").textContent = `${subB.elo} Elo`;
+      document.getElementById("descB").textContent = subB.desc || "Verified Contender Entry";
       document.getElementById("imgB").src = subB.url;
     }
 
     async function castVote(choice) {
-      const winner = choice === 'A' ? currentPair.submissionA : currentPair.submissionB;
+      const winner = choice === "A" ? currentPair.submissionA : currentPair.submissionB;
       const feedback = document.getElementById("voteFeedback");
 
       try {
@@ -278,14 +311,24 @@
           submissionBId: currentPair.submissionB.id
         });
 
+        votesCast++;
+        document.getElementById("sessionCounter").textContent = `Votes: ${votesCast}`;
+
+        const signA = result.deltaA >= 0 ? `+${result.deltaA}` : `${result.deltaA}`;
+        const signB = result.deltaB >= 0 ? `+${result.deltaB}` : `${result.deltaB}`;
+
         feedback.style.color = "#4ade80";
-        feedback.textContent = `✓ Vote counted for ${winner.user}! Elo recalibrated (Entry A: ${result.ratingA}, Entry B: ${result.ratingB}).`;
+        feedback.innerHTML = `
+          <div style="background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); padding: 0.65rem 1.25rem; border-radius: 9999px;">
+            ✓ Vote counted for <strong>${winner.user}</strong>! Elo adjusted: Entry A: ${result.ratingA} (${signA}) | Entry B: ${result.ratingB} (${signB})
+          </div>
+        `;
       } catch (err) {
         feedback.style.color = "#f87171";
         feedback.textContent = "Vote failed: " + err.message;
       }
 
-      setTimeout(loadNextMatchup, 1200);
+      setTimeout(loadNextMatchup, 1300);
     }
 
     document.getElementById("skipPairBtn").addEventListener("click", loadNextMatchup);
