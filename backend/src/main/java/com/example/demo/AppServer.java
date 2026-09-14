@@ -1,4 +1,4 @@
-package backend;
+package com.example.demo;
 
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
