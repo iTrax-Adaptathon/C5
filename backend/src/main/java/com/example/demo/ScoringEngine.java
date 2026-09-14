@@ -1,5 +1,5 @@
 
-package scoring;
+package com.example.demo;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
