@@ -33,9 +33,10 @@ public class PlatformController {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
+            boolean higherIsBetter = !sub.getChallengeId().toLowerCase().contains("run");
             for (Submission entry : cohort) {
                 if (entry.getRawMetric() != null) {
-                    double rank = ScoringEngine.percentileRank(entry.getRawMetric(), allMetrics, true);
+                    double rank = ScoringEngine.percentileRank(entry.getRawMetric(), allMetrics, higherIsBetter);
                     entry.setPercentileScore(rank);
                     submissionRepo.save(entry);
                 }
@@ -81,9 +82,16 @@ public class PlatformController {
     // 4. Record Pairwise Vote (arena.html)
     @PostMapping("/challenges/{id}/vote")
     public ResponseEntity<?> recordVote(@RequestBody Map<String, Object> body) {
+        if (!body.containsKey("winnerId")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "winnerId is required"));
+        }
         Long winnerId = Long.valueOf(body.get("winnerId").toString());
-        Long subAId = Long.valueOf(body.get("submissionAId").toString());
-        Long subBId = Long.valueOf(body.get("submissionBId").toString());
+        Long subAId = body.get("submissionAId") != null ? Long.valueOf(body.get("submissionAId").toString()) : null;
+        Long subBId = body.get("submissionBId") != null ? Long.valueOf(body.get("submissionBId").toString()) : null;
+
+        if (subAId == null || subBId == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "submissionAId and submissionBId are required"));
+        }
 
         Submission subA = submissionRepo.findById(subAId).orElseThrow();
         Submission subB = submissionRepo.findById(subBId).orElseThrow();
@@ -96,6 +104,6 @@ public class PlatformController {
         submissionRepo.save(subA);
         submissionRepo.save(subB);
 
-        return ResponseEntity.ok(Map.of("status", "elo_updated"));
+        return ResponseEntity.ok(Map.of("status", "elo_updated", "ratingA", result.ratingA(), "ratingB", result.ratingB()));
     }
 }

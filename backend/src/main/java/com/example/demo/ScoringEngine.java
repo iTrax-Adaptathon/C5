@@ -27,15 +27,10 @@ public class ScoringEngine {
     public static double percentileRank(double value, List<Double> allValues, boolean higherIsBetter) {
         if (allValues == null || allValues.size() <= 1) return 100.0;
 
-        List<Double> sorted = new ArrayList<>(allValues);
-        if (higherIsBetter) {
-            Collections.sort(sorted);
-        } else {
-            sorted.sort(Collections.reverseOrder());
-        }
-
-        long countBelow = sorted.stream().filter(v -> v < value).count();
-        return Math.round(((double) countBelow / (sorted.size() - 1)) * 100.0);
+        long countBeaten = higherIsBetter
+            ? allValues.stream().filter(v -> v < value).count()
+            : allValues.stream().filter(v -> v > value).count();
+        return Math.round(((double) countBeaten / (allValues.size() - 1)) * 100.0);
     }
 
     // 3. Reviewer weight calibration against gold standards
