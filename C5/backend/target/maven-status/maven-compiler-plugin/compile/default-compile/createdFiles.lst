@@ -1,0 +1,11 @@
+com\example\demo\DemoApplication.class
+com\example\demo\Submission.class
+com\example\demo\CorsConfig.class
+com\example\demo\CorsConfig$1.class
+com\example\demo\VerificationTier.class
+com\example\demo\PlatformController.class
+com\example\demo\DataInitializer.class
+com\example\demo\ChallengeResult.class
+com\example\demo\ScoringEngine$EloResult.class
+com\example\demo\ScoringEngine.class
+com\example\demo\SubmissionRepository.class
