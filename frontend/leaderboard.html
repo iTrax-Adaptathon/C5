@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platform - Leaderboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="hero-tag">Anti-Farming Engine</span>
+      <h1>Real-Time Standings</h1>
+      <p>Reputation-weighted rankings filtered by verification tier</p>
+      <nav class="nav-bar">
+        <a href="index.html" class="nav-link">Submit Entry</a>
+        <a href="leaderboard.html" class="nav-link active">Standings</a>
+        <a href="arena.html" class="nav-link">Peer Arena</a>
+      </nav>
+    </header>
 
+    <main>
+      <section class="card">
+        <div class="form-group" style="margin-bottom: 1rem;">
+          <label for="filterTier">Filter By Trust Level:</label>
+          <select id="filterTier" onchange="loadLeaderboard()">
+            <option value="0">Show All Entries (Tier 0+)</option>
+            <option value="2">Peer Verified & Up (Tier 2+)</option>
+            <option value="4">Moderator Certified (Tier 4)</option>
+          </select>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Participant</th>
+                <th>Score</th>
+                <th>Verification</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8080/api";
+
+    async function loadLeaderboard() {
+      const minTier = parseInt(document.getElementById("filterTier").value, 10);
+      const tbody = document.getElementById("leaderboardBody");
+      tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>Loading...</td></tr>";
+
+      try {
+        const res = await fetch(`${API_BASE}/challenges/5k-run/leaderboard?min_tier=${minTier}`);
+        const data = await res.json();
+        renderTable(data);
+      } catch (err) {
+        const sampleData = [
+          { user: "dev_satoshi", score: "99.2%", tier: 4, label: "Moderator" },
+          { user: "quantum_coder", score: "88.5%", tier: 2, label: "Peer Verified" },
+          { user: "pixel_hunter", score: "64.1%", tier: 2, label: "Peer Verified" },
+          { user: "newbie_farmer", score: "42.0%", tier: 0, label: "Self Reported" }
+        ];
+        renderTable(sampleData.filter(item => item.tier >= minTier));
+      }
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById("leaderboardBody");
+      tbody.innerHTML = rows.map((r, i) => {
+        let badgeClass = "badge-self";
+        if (r.tier >= 4) badgeClass = "badge-moderator";
+        else if (r.tier >= 2) badgeClass = "badge-peer";
+
+        return `
+          <tr>
+            <td class="rank-cell">0${i + 1}</td>
+            <td style="font-weight:600;">${r.user}</td>
+            <td><strong style="color:#38bdf8;">${r.score}</strong></td>
+            <td><span class="badge ${badgeClass}">${r.label}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    loadLeaderboard();
+  </script>
+</body>
+</html>
