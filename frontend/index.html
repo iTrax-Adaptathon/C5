@@ -1,1 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Community Challenge Platform</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 850px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+    header { border-bottom: 2px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem; }
+    .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    label { display: block; font-weight: 600; margin: 0.75rem 0 0.25rem; }
+    input, select, button { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { background: #2563eb; color: #fff; border: none; font-weight: 600; cursor: pointer; margin-top: 1rem; }
+    button:hover { background: #1d4ed8; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #e2e8f0; padding: 0.6rem; text-align: left; }
+    th { background: #f8fafc; }
+    .tier-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; font-weight: bold; }
+  </style>
+</head>
+<body>
 
+  <header>
+    <h1>Community Challenge Platform</h1>
+    <p>Fair, anti-farming competition hub</p>
+  </header>
+
+  <!-- Section 1: Submit Entry Form -->
+  <section class="card">
+    <h2>Submit Challenge Entry</h2>
+    <form id="submission-form">
+      <label for="userId">User ID</label>
+      <input type="text" id="userId" placeholder="Enter your user UUID" required />
+
+      <label for="challengeSelect">Select Challenge</label>
+      <select id="challengeSelect">
+        <option value="5k-run" data-type="metric">5K Run (Metric)</option>
+        <option value="photo-contest" data-type="subjective">Nature Photography (Subjective / Elo)</option>
+        <option value="book-reading" data-type="boolean">Read 1 Book (Completion)</option>
+      </select>
+
+      <!-- Dynamic field: changes per evaluation type -->
+      <div id="dynamicMetricField">
+        <label for="metricInput">Performance Metric (e.g. Minutes / Reps)</label>
+        <input type="number" id="metricInput" step="any" placeholder="e.g. 23.5" />
+      </div>
+
+      <label for="evidenceUrl">Proof / Media URL</label>
+      <input type="url" id="evidenceUrl" placeholder="https://example.com/proof.jpg" required />
+
+      <label for="verificationTier">Verification Tier</label>
+      <select id="verificationTier">
+        <option value="0">Tier 0: Self-reported (Multiplier 0.3x)</option>
+        <option value="1">Tier 1: Evidence Attached (Multiplier 0.5x)</option>
+        <option value="2">Tier 2: Peer-verified (Multiplier 1.0x)</option>
+        <option value="3">Tier 3: Sensor / API Verified (Multiplier 1.1x)</option>
+        <option value="4">Tier 4: Moderator Verified (Multiplier 1.2x)</option>
+      </select>
+
+      <button type="submit">Submit Entry</button>
+    </form>
+    <p id="submissionStatus" style="font-size: 0.9rem; color: #16a34a;"></p>
+  </section>
+
+  <!-- Section 2: Leaderboard with Tier Filter -->
+  <section class="card">
+    <h2>Leaderboard</h2>
+    <label for="filterTier">Filter by Minimum Verification Tier:</label>
+    <select id="filterTier" onchange="loadLeaderboard()">
+      <option value="0">All Submissions (Tier 0+)</option>
+      <option value="2">Verified Only (Tier 2+)</option>
+      <option value="4">Moderator Verified Only (Tier 4)</option>
+    </select>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>User</th>
+          <th>Score / Percentile</th>
+          <th>Trust Tier</th>
+        </tr>
+      </thead>
+      <tbody id="leaderboardBody">
+        <!-- Rendered dynamically -->
+      </tbody>
+    </table>
+  </section>
+
+  <script>
+    const API_BASE = "http://localhost:8080/api"; // Member 2's backend URL
+
+    // Adjust fields when switching evaluation types
+    const challengeSelect = document.getElementById("challengeSelect");
+    const dynamicMetricField = document.getElementById("dynamicMetricField");
+
+    challengeSelect.addEventListener("change", (e) => {
+      const selectedType = e.target.selectedOptions[0].dataset.type;
+      dynamicMetricField.style.display = (selectedType === "metric") ? "block" : "none";
+    });
+
+    // Handle form submission
+    document.getElementById("submission-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        userId: document.getElementById("userId").value,
+        challengeId: challengeSelect.value,
+        rawMetric: parseFloat(document.getElementById("metricInput").value) || null,
+        contentUrl: document.getElementById("evidenceUrl").value,
+        verificationTier: parseInt(document.getElementById("verificationTier").value, 10)
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/submissions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          document.getElementById("submissionStatus").textContent = "Submission recorded (overwrites previous active entry)!";
+          loadLeaderboard();
+        }
+      } catch (err) {
+        document.getElementById("submissionStatus").textContent = "Backend offline. Test submission logged to console.";
+        console.log("Mock Submission Payload:", payload);
+      }
+    });
+
+    // Fetch and display leaderboard
+    async function loadLeaderboard() {
+      const minTier = document.getElementById("filterTier").value;
+      const tbody = document.getElementById("leaderboardBody");
+      tbody.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+
+      try {
+        const res = await fetch(`${API_BASE}/challenges/${challengeSelect.value}/leaderboard?min_tier=${minTier}`);
+        const data = await res.json();
+        renderTable(data);
+      } catch (err) {
+        // Mock fallback data for offline testing during UI development
+        renderTable([
+          { user: "User_Alpha", score: "96.4th Percentile", tier: "Tier 2 (Peer)" },
+          { user: "User_Bravo", score: "88.1th Percentile", tier: "Tier 1 (Evidence)" },
+          { user: "User_Charlie", score: "54.0th Percentile", tier: "Tier 0 (Self)" }
+        ]);
+      }
+    }
+
+    function renderTable(rows) {
+      const tbody = document.getElementById("leaderboardBody");
+      tbody.innerHTML = rows.map((r, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${r.user}</td>
+          <td>${r.score}</td>
+          <td><span class="tier-badge">${r.tier}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // Initial render
+    loadLeaderboard();
+  </script>
+</body>
+</html>
