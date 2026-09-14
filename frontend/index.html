@@ -1,106 +1,215 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="style.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Community Challenge Platform</title>
+  <title>Submit Entry - Challenge Platform</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 850px; margin: 2rem auto; padding: 0 1rem; color: #222; }
-    header { border-bottom: 2px solid #eee; padding-bottom: 1rem; margin-bottom: 2rem; }
-    .card { border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    label { display: block; font-weight: 600; margin: 0.75rem 0 0.25rem; }
-    input, select, button { width: 100%; padding: 0.6rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-    button { background: #2563eb; color: #fff; border: none; font-weight: 600; cursor: pointer; margin-top: 1rem; }
-    button:hover { background: #1d4ed8; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #e2e8f0; padding: 0.6rem; text-align: left; }
-    th { background: #f8fafc; }
-    .tier-badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; background: #e0f2fe; color: #0369a1; font-weight: bold; }
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --surface: rgba(30, 41, 59, 0.7);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --accent-hover: linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #db2777 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: #0f172a;
+      --input-border: #334155;
+      --radius: 16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--text-main);
+      padding: 2.5rem 1.5rem;
+    }
+
+    .container { max-width: 650px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+
+    .hero-tag {
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #a5b4fc;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #cbd5e1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Shared Navigation Bar */
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      border: 1px solid var(--surface-border);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .card h2 { font-size: 1.35rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+    form { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    label { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; }
+
+    input, select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      font-size: 0.95rem;
+      color: #fff;
+      background-color: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      background: var(--accent-gradient);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    #submissionStatus {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-top: 0.5rem;
+      color: #4ade80;
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <header>
+      <span class="hero-tag">Anti-Farming Engine</span>
+      <h1>Challenge Hub</h1>
+      <p>Submit proof and earn verified rankings</p>
+      <nav class="nav-bar">
+        <a href="index.html" class="nav-link active">Submit Entry</a>
+        <a href="leaderboard.html" class="nav-link">Standings</a>
+        <a href="arena.html" class="nav-link">Peer Arena</a>
+      </nav>
+    </header>
 
-  <header>
-    <h1>Community Challenge Platform</h1>
-    <p>Fair, anti-farming competition hub</p>
-  </header>
+    <main>
+      <section class="card">
+        <h2>🚀 Submit Entry</h2>
+        <form id="submission-form">
+          <div class="form-group">
+            <label for="userId">Participant ID</label>
+            <input type="text" id="userId" placeholder="Enter user UUID or handle" required />
+          </div>
 
-  <!-- Section 1: Submit Entry Form -->
-  <section class="card">
-    <h2>Submit Challenge Entry</h2>
-    <form id="submission-form">
-      <label for="userId">User ID</label>
-      <input type="text" id="userId" placeholder="Enter your user UUID" required />
+          <div class="form-group">
+            <label for="challengeSelect">Challenge Track</label>
+            <select id="challengeSelect">
+              <option value="5k-run" data-type="metric">5K Speed Run (Metric)</option>
+              <option value="photo-contest" data-type="subjective">AI Prompt Arena (Pairwise Elo)</option>
+              <option value="book-reading" data-type="boolean">Deploy Contract (Boolean Completion)</option>
+            </select>
+          </div>
 
-      <label for="challengeSelect">Select Challenge</label>
-      <select id="challengeSelect">
-        <option value="5k-run" data-type="metric">5K Run (Metric)</option>
-        <option value="photo-contest" data-type="subjective">Nature Photography (Subjective / Elo)</option>
-        <option value="book-reading" data-type="boolean">Read 1 Book (Completion)</option>
-      </select>
+          <div id="dynamicMetricField" class="form-group">
+            <label for="metricInput">Raw Performance Metric (Minutes / Reps)</label>
+            <input type="number" id="metricInput" step="any" placeholder="e.g. 21.4" />
+          </div>
 
-      <!-- Dynamic field: changes per evaluation type -->
-      <div id="dynamicMetricField">
-        <label for="metricInput">Performance Metric (e.g. Minutes / Reps)</label>
-        <input type="number" id="metricInput" step="any" placeholder="e.g. 23.5" />
-      </div>
+          <div class="form-group">
+            <label for="evidenceUrl">Proof or Media URL</label>
+            <input type="url" id="evidenceUrl" placeholder="https://github.com/..." required />
+          </div>
 
-      <label for="evidenceUrl">Proof / Media URL</label>
-      <input type="url" id="evidenceUrl" placeholder="https://example.com/proof.jpg" required />
+          <div class="form-group">
+            <label for="verificationTier">Verification Tier</label>
+            <select id="verificationTier">
+              <option value="0">Tier 0: Self-reported (0.3x)</option>
+              <option value="1">Tier 1: Evidence Attached (0.5x)</option>
+              <option value="2">Tier 2: Peer-verified (1.0x)</option>
+              <option value="3">Tier 3: Sensor / API Verified (1.1x)</option>
+              <option value="4">Tier 4: Moderator Verified (1.2x)</option>
+            </select>
+          </div>
 
-      <label for="verificationTier">Verification Tier</label>
-      <select id="verificationTier">
-        <option value="0">Tier 0: Self-reported (Multiplier 0.3x)</option>
-        <option value="1">Tier 1: Evidence Attached (Multiplier 0.5x)</option>
-        <option value="2">Tier 2: Peer-verified (Multiplier 1.0x)</option>
-        <option value="3">Tier 3: Sensor / API Verified (Multiplier 1.1x)</option>
-        <option value="4">Tier 4: Moderator Verified (Multiplier 1.2x)</option>
-      </select>
-
-      <button type="submit">Submit Entry</button>
-    </form>
-    <p id="submissionStatus" style="font-size: 0.9rem; color: #16a34a;"></p>
-  </section>
-
-  <!-- Section 2: Leaderboard with Tier Filter -->
-  <section class="card">
-    <h2>Leaderboard</h2>
-    <label for="filterTier">Filter by Minimum Verification Tier:</label>
-    <select id="filterTier" onchange="loadLeaderboard()">
-      <option value="0">All Submissions (Tier 0+)</option>
-      <option value="2">Verified Only (Tier 2+)</option>
-      <option value="4">Moderator Verified Only (Tier 4)</option>
-    </select>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>User</th>
-          <th>Score / Percentile</th>
-          <th>Trust Tier</th>
-        </tr>
-      </thead>
-      <tbody id="leaderboardBody">
-        <!-- Rendered dynamically -->
-      </tbody>
-    </table>
-  </section>
+          <button type="submit">Submit Entry</button>
+        </form>
+        <p id="submissionStatus"></p>
+      </section>
+    </main>
+  </div>
 
   <script>
-    const API_BASE = "http://localhost:8080/api"; // Member 2's backend URL
+    const API_BASE = "http://localhost:8080/api";
 
-    // Adjust fields when switching evaluation types
     const challengeSelect = document.getElementById("challengeSelect");
     const dynamicMetricField = document.getElementById("dynamicMetricField");
 
     challengeSelect.addEventListener("change", (e) => {
       const selectedType = e.target.selectedOptions[0].dataset.type;
-      dynamicMetricField.style.display = (selectedType === "metric") ? "block" : "none";
+      dynamicMetricField.style.display = (selectedType === "metric") ? "flex" : "none";
     });
 
-    // Handle form submission
     document.getElementById("submission-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const payload = {
@@ -118,49 +227,12 @@
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          document.getElementById("submissionStatus").textContent = "Submission recorded (overwrites previous active entry)!";
-          loadLeaderboard();
+          document.getElementById("submissionStatus").textContent = "Entry saved! Go to Standings to see your rank.";
         }
       } catch (err) {
-        document.getElementById("submissionStatus").textContent = "Backend offline. Test submission logged to console.";
-        console.log("Mock Submission Payload:", payload);
+        document.getElementById("submissionStatus").textContent = "Mock submit successful (Offline Demo Mode)";
       }
     });
-
-    // Fetch and display leaderboard
-    async function loadLeaderboard() {
-      const minTier = document.getElementById("filterTier").value;
-      const tbody = document.getElementById("leaderboardBody");
-      tbody.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
-
-      try {
-        const res = await fetch(`${API_BASE}/challenges/${challengeSelect.value}/leaderboard?min_tier=${minTier}`);
-        const data = await res.json();
-        renderTable(data);
-      } catch (err) {
-        // Mock fallback data for offline testing during UI development
-        renderTable([
-          { user: "User_Alpha", score: "96.4th Percentile", tier: "Tier 2 (Peer)" },
-          { user: "User_Bravo", score: "88.1th Percentile", tier: "Tier 1 (Evidence)" },
-          { user: "User_Charlie", score: "54.0th Percentile", tier: "Tier 0 (Self)" }
-        ]);
-      }
-    }
-
-    function renderTable(rows) {
-      const tbody = document.getElementById("leaderboardBody");
-      tbody.innerHTML = rows.map((r, i) => `
-        <tr>
-          <td>${i + 1}</td>
-          <td>${r.user}</td>
-          <td>${r.score}</td>
-          <td><span class="tier-badge">${r.tier}</span></td>
-        </tr>
-      `).join('');
-    }
-
-    // Initial render
-    loadLeaderboard();
   </script>
 </body>
 </html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Peer Arena - Challenge Platform</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --surface: rgba(30, 41, 59, 0.75);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius: 16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--text-main);
+      padding: 2.5rem 1.5rem;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 2.5rem; }
+
+    .hero-tag {
+      display: inline-block;
+      padding: 0.3rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(236, 72, 153, 0.15);
+      border: 1px solid rgba(236, 72, 153, 0.35);
+      color: #f472b6;
+      margin-bottom: 0.75rem;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(to right, #ffffff, #cbd5e1, #a855f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    header p { color: var(--text-muted); font-size: 1.05rem; }
+
+    .nav-bar {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      border: 1px solid var(--surface-border);
+      transition: all 0.2s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: #fff;
+      background: rgba(99, 102, 241, 0.2);
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    .arena-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .arena-header h2 { font-size: 1.35rem; font-weight: 700; }
+
+    .btn-secondary {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    .arena-matchup {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .vs-circle {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #ec4899;
+      padding: 0.6rem 0.8rem;
+      border-radius: 50%;
+      background: rgba(236, 72, 153, 0.1);
+      border: 1px solid rgba(236, 72, 153, 0.3);
+    }
+
+    .contender-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      transition: all 0.2s ease;
+    }
+
+    .contender-box:hover { border-color: #818cf8; }
+
+    .preview-box {
+      width: 100%;
+      height: 180px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #0b0f19;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .vote-action-btn {
+      background: linear-gradient(135deg, #3b82f6, #6366f1);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #fff;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+      transition: all 0.2s ease;
+    }
+
+    .vote-action-btn:hover {
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      transform: translateY(-1px);
+    }
+
+    #voteFeedback {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .arena-matchup { grid-template-columns: 1fr; }
+      .vs-circle { margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <span class="hero-tag">Anti-Popularity Arena</span>
+      <h1>Peer Review Arena</h1>
+      <p>Evaluate two random submissions head-to-head without follower bias</p>
+      <nav class="nav-bar">
+        <a href="index.html" class="nav-link">Submit Entry</a>
+        <a href="leaderboard.html" class="nav-link">Standings</a>
+        <a href="arena.html" class="nav-link active">Peer Arena</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="card">
+        <div class="arena-header">
+          <div>
+            <h2>⚖️ Current Matchup</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Vote for the higher-quality entry to calibrate ratings.</p>
+          </div>
+          <button id="skipPairBtn" class="btn-secondary">Skip Matchup</button>
+        </div>
+
+        <div class="arena-matchup">
+          <div class="contender-box">
+            <span style="font-size: 0.75rem; font-weight: 700; color: #818cf8;">ENTRY A</span>
+            <div class="preview-box"><img id="imgA" src="" alt="Entry A proof" /></div>
+            <h3 id="authorA" style="font-size: 1.05rem; font-weight: 700;">Loading...</h3>
+            <p id="descA" style="font-size: 0.85rem; color: var(--text-muted);">Fetching...</p>
+            <button class="vote-action-btn" onclick="castVote('A')">Select Entry A</button>
+          </div>
+
+          <div class="vs-circle">VS</div>
+
+          <div class="contender-box">
+            <span style="font-size: 0.75rem; font-weight: 700; color: #ec4899;">ENTRY B</span>
+            <div class="preview-box"><img id="imgB" src="" alt="Entry B proof" /></div>
+            <h3 id="authorB" style="font-size: 1.05rem; font-weight: 700;">Loading...</h3>
+            <p id="descB" style="font-size: 0.85rem; color: var(--text-muted);">Fetching...</p>
+            <button class="vote-action-btn" onclick="castVote('B')">Select Entry B</button>
+          </div>
+        </div>
+
+        <p id="voteFeedback"></p>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:8080/api";
+    let currentPair = { submissionA: null, submissionB: null };
+
+    async function loadNextMatchup() {
+      const feedback = document.getElementById("voteFeedback");
+      feedback.textContent = "";
+
+      try {
+        const res = await fetch(`${API_BASE}/challenges/photo-contest/pair`);
+        const data = await res.json();
+        currentPair = data;
+        renderMatchup(data.submissionA, data.submissionB);
+      } catch (err) {
+        currentPair = {
+          submissionA: { id: "sub_101", user: "creative_mind", url: "https://picsum.photos/seed/art1/400/300", desc: "Generative Canvas Model v2" },
+          submissionB: { id: "sub_102", user: "prompt_master", url: "https://picsum.photos/seed/art2/400/300", desc: "Minimalist Shaded Architecture" }
+        };
+        renderMatchup(currentPair.submissionA, currentPair.submissionB);
+      }
+    }
+
+    function renderMatchup(subA, subB) {
+      document.getElementById("authorA").textContent = subA.user;
+      document.getElementById("descA").textContent = subA.desc;
+      document.getElementById("imgA").src = subA.url;
+
+      document.getElementById("authorB").textContent = subB.user;
+      document.getElementById("descB").textContent = subB.desc;
+      document.getElementById("imgB").src = subB.url;
+    }
+
+    async function castVote(choice) {
+      const winner = choice === 'A' ? currentPair.submissionA : currentPair.submissionB;
+      const feedback = document.getElementById("voteFeedback");
+
+      try {
+        await fetch(`${API_BASE}/challenges/photo-contest/vote`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ winnerId: winner.id })
+        });
+        feedback.style.color = "#4ade80";
+        feedback.textContent = `Vote counted for ${winner.user}! Elo recalibrated.`;
+      } catch (err) {
+        feedback.style.color = "#a855f7";
+        feedback.textContent = `Vote counted for ${winner.user}! (Demo Simulation)`;
+      }
+
+      setTimeout(loadNextMatchup, 1000);
+    }
+
+    document.getElementById("skipPairBtn").addEventListener("click", loadNextMatchup);
+    loadNextMatchup();
+  </script>
+</body>
+</html>

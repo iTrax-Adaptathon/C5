@@ -1,4 +1,4 @@
-package scoring;
+package com.example.demo;
 public class ChallengeResult {
     private final double percentileScore;      // 0 to 100
     private final double difficultyScore;      // 0.0 to 1.0
