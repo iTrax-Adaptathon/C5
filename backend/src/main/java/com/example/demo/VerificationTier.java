@@ -1,5 +1,5 @@
 
-package scoring;
+package com.example.demo;
 import java.util.Map;
 public class VerificationTier {
     public static final Map<Integer, Double> MULTIPLIERS = Map.of(
