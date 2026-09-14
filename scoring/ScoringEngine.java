@@ -60,4 +60,4 @@ public class ScoringEngine {
 
         return Math.round((averageScore * volumeMultiplier) * 100.0) / 100.0;
     }
-}
+} Scoring rate last
